@@ -1,0 +1,40 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="This crate is a wrapper around different implementations of AES block ciphers."><title>aes - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="aes" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.1 (3f5fd8dd4 2024-08-06)" data-channel="1.80.1" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/RustCrypto/meta/master/logo.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button><a class="logo-container" href="../aes/index.html"><img src="https://raw.githubusercontent.com/RustCrypto/meta/master/logo.svg" alt=""></a></nav><nav class="sidebar"><div class="sidebar-crate"><a class="logo-container" href="../aes/index.html"><img src="https://raw.githubusercontent.com/RustCrypto/meta/master/logo.svg" alt="logo"></a><h2><a href="../aes/index.html">aes</a><span class="version">0.6.0</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#reexports">Re-exports</a></li><li><a href="#structs">Structs</a></li><li><a href="#traits">Traits</a></li></ul></section></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">aes</a><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><span class="out-of-band"><a class="src" href="../src/aes/lib.rs.html#1-66">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>This crate is a wrapper around different implementations of AES block ciphers.</p>
+<p>Currently it uses:</p>
+<ul>
+<li><a href="https://docs.rs/aes-soft"><code>aes-soft</code></a> hardware independent bit-sliced
+implementation</li>
+<li><a href="https://docs.rs/aesni"><code>aesni</code></a> implementation using
+<a href="https://en.wikipedia.org/wiki/AES_instruction_set">AES-NI</a> instruction set.
+Used for x86-64 and x86 target architectures with enabled <code>aes</code> and <code>sse2</code>
+target features (the latter is usually enabled by default).</li>
+</ul>
+<p>Crate switches between implementations automatically at compile time.
+(i.e. it does not use run-time feature detection)</p>
+<h2 id="usage-example"><a class="doc-anchor" href="#usage-example">§</a>Usage example</h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>aes::cipher::generic_array::GenericArray;
+<span class="kw">use </span>aes::cipher::{BlockCipher, NewBlockCipher};
+<span class="kw">use </span>aes::Aes128;
+
+<span class="kw">let </span>key = GenericArray::from_slice(<span class="kw-2">&amp;</span>[<span class="number">0u8</span>; <span class="number">16</span>]);
+<span class="kw">let </span><span class="kw-2">mut </span>block = GenericArray::clone_from_slice(<span class="kw-2">&amp;</span>[<span class="number">0u8</span>; <span class="number">16</span>]);
+<span class="kw">let </span><span class="kw-2">mut </span>block8 = GenericArray::clone_from_slice(<span class="kw-2">&amp;</span>[block; <span class="number">8</span>]);
+<span class="comment">// Initialize cipher
+</span><span class="kw">let </span>cipher = Aes128::new(<span class="kw-2">&amp;</span>key);
+
+<span class="kw">let </span>block_copy = block.clone();
+<span class="comment">// Encrypt block in-place
+</span>cipher.encrypt_block(<span class="kw-2">&amp;mut </span>block);
+<span class="comment">// And decrypt it back
+</span>cipher.decrypt_block(<span class="kw-2">&amp;mut </span>block);
+<span class="macro">assert_eq!</span>(block, block_copy);
+
+<span class="comment">// We can encrypt 8 blocks simultaneously using
+// instruction-level parallelism
+</span><span class="kw">let </span>block8_copy = block8.clone();
+cipher.encrypt_blocks(<span class="kw-2">&amp;mut </span>block8);
+cipher.decrypt_blocks(<span class="kw-2">&amp;mut </span>block8);
+<span class="macro">assert_eq!</span>(block8, block8_copy);</code></pre></div>
+<p>For implementations of block cipher modes of operation see
+<a href="https://docs.rs/block-modes"><code>block-modes</code></a> crate.</p>
+</div></details><h2 id="reexports" class="section-header">Re-exports<a href="#reexports" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name" id="reexport.cipher"><code>pub use cipher;</code></div></li></ul><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.Aes128.html" title="struct aes::Aes128">Aes128</a></div><div class="desc docblock-short">AES-128 block cipher instance</div></li><li><div class="item-name"><a class="struct" href="struct.Aes192.html" title="struct aes::Aes192">Aes192</a></div><div class="desc docblock-short">AES-192 block cipher instance</div></li><li><div class="item-name"><a class="struct" href="struct.Aes256.html" title="struct aes::Aes256">Aes256</a></div><div class="desc docblock-short">AES-256 block cipher instance</div></li></ul><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="trait" href="trait.BlockCipher.html" title="trait aes::BlockCipher">BlockCipher</a></div><div class="desc docblock-short">The trait which defines in-place encryption and decryption
+over single block or several blocks in parallel.</div></li><li><div class="item-name"><a class="trait" href="trait.NewBlockCipher.html" title="trait aes::NewBlockCipher">NewBlockCipher</a></div><div class="desc docblock-short">Instantiate a <a href="trait.BlockCipher.html" title="trait aes::BlockCipher"><code>BlockCipher</code></a> algorithm.</div></li></ul></section></div></main></body></html>

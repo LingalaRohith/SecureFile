@@ -1,6 +1,15 @@
 [package]
-name = "securefile"
+name = "secure_file_management"
 version = "0.1.0"
+authors = ["Rohith Lingala <rl92464@uga.edu>"]
 edition = "2021"
 
 [dependencies]
+chrono = "0.4"  # For handling timestamps
+aes = "0.6"  # For AES encryption
+base64 = "0.13"  # Encoding for encryption keys
+diesel = { version = "2.0", features = ["mysql"] }  # ORM for MySQL/PostgreSQL
+dotenv = "0.15"  # For environment configuration
+clap = "3.0"  # Command-line argument parsing
+bcrypt = "0.11"  # For password hashing
+mysqlclient-sys = "0.4.0"

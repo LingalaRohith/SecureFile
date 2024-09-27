@@ -1,0 +1,7 @@
+CREATE TABLE MasterKeys (
+    key_id INT PRIMARY KEY AUTO_INCREMENT,
+    master_key VARBINARY(255) NOT NULL,
+    valid_until TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
