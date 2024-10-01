@@ -56,7 +56,7 @@ This project is a secure file management system built using Rust and MySQL. It p
   - `encrypt_file`: Encrypts file data using AES-256 in CBC mode with PKCS7 padding. Generates a random IV for each encryption.
   - `decrypt_file`: Decrypts encrypted file data using the provided key and IV.
 
-#### `accesscontrol.rs`
+#### `access_control.rs`
 
 - **Purpose**: Manages access control logic, determining user permissions based on roles, file priority levels, and time restrictions.
 - **Key Functions**:
