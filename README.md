@@ -6,7 +6,7 @@ This project is a secure file management system built using Rust and MySQL. It p
 
 - **User Management**:
   - **Registration and Authentication**: Users can register with a unique username and password, which is securely hashed using bcrypt.
-  - **Role Management**: Users are assigned roles (`admin`, `developer`, `manager`, `director`) that determine their access levels.
+  - **Role Management**: Users are assigned roles (`developer`, `manager`, `director`, `admin`) that determine their access levels.
   - **Blocking Logic**: Implements failed login attempt tracking and blocks users after a certain threshold to prevent brute-force attacks.
 
 - **File Management**:
