@@ -144,26 +144,6 @@ This project is a secure file management system built using Rust and MySQL. It p
      cargo build
      ```
 
-4. **Run the Project**:
-   - Start the application:
-     ```bash
-     cargo run -- [OPTIONS]
-     ```
-   - Use command-line options to interact with the system (e.g., register users, upload files).
-
-5. **Usage Examples**:
-   - **Register a New User**:
-     ```bash
-     cargo run -- register --username alice --password secret --role manager
-     ```
-   - **Upload a File** (Admin only):
-     ```bash
-     cargo run -- upload --file-path /path/to/file --priority 3 --uploader-id 1
-     ```
-   - **Retrieve a File**:
-     ```bash
-     cargo run -- retrieve --file-id 2 --user-id 3 --password userpassword
-     ```
 
 ### Security Considerations:
 
