@@ -56,7 +56,7 @@ This project is a secure file management system built using Rust and MySQL. It p
   - `encrypt_file`: Encrypts file data using AES-256 in CBC mode with PKCS7 padding. Generates a random IV for each encryption.
   - `decrypt_file`: Decrypts encrypted file data using the provided key and IV.
 
-#### `accesscontrol.rs`
+#### `access_control.rs`
 
 - **Purpose**: Manages access control logic, determining user permissions based on roles, file priority levels, and time restrictions.
 - **Key Functions**:
@@ -112,37 +112,6 @@ This project is a secure file management system built using Rust and MySQL. It p
 - **Other Dependencies**:
   - `base64 = "0.13"`: Used for encoding/decoding encryption keys.
   - `block-modes`, `block-padding`: (Implicit through encryption crates) Used for encryption modes and padding schemes.
-
-### Setup Instructions:
-
-1. **Prerequisites**:
-   - **Rust and Cargo**: Ensure Rust and Cargo are installed. You can install them from [rustup.rs](https://rustup.rs/).
-   - **MySQL Server**: Install and run a MySQL server instance.
-
-2. **Database Setup**:
-   - Create a new database (e.g., `Files`) in MySQL.
-   - Run the `schema.sql` script to set up the database schema:
-     ```bash
-     mysql -u username -p Files < schema.sql
-     ```
-   - Configure database connection settings in a `.env` file at the project root:
-     ```
-     DATABASE_URL=mysql://username:password@localhost/Files
-     ```
-
-3. **Build the Project**:
-   - Clone the repository:
-     ```bash
-     git clone https://github.com/yourusername/secure_file_management.git
-     ```
-   - Navigate to the project directory:
-     ```bash
-     cd secure_file_management
-     ```
-   - Build the project using Cargo:
-     ```bash
-     cargo build
-     ```
 
 
 ### Security Considerations:
