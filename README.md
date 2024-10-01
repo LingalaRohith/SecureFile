@@ -12,7 +12,8 @@ This project is a secure file management system built using Rust and MySQL. It p
 - **File Management**:
   - **File Upload**: Admins can upload files, which are encrypted using AES encryption before being stored.
   - **File Retrieval**: Users can retrieve and decrypt files if they have the necessary permissions based on their role and the file's priority level.
-  - **Priority Management**: Each file is assigned a priority level (1-5) that dictates access restrictions.
+  - **Priority Management**: Each file is assigned a priority level (1-4) that dictates access restrictions.
+  - **Race Condition**: When one user is trying to edit the file, the file is locked and the other users can only read the file. The cannot access the file in the write mode 
 
 - **Encryption and Decryption**:
   - **AES Encryption**: Utilizes AES-256 encryption for securing files.
@@ -153,6 +154,6 @@ This project is a secure file management system built using Rust and MySQL. It p
    - Build the project using Cargo:
      ```bash
      cargo build
-     ```4
+     ```
 
 
