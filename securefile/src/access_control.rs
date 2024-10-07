@@ -3,7 +3,7 @@
 pub struct AccessControl {
     pub user_id: u32,
     pub file_id: u32,
-    pub access_granted: bool,
+    access_granted: bool,
     pub role_required: UserRole,
     pub time_restricted: bool,
 }
