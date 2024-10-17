@@ -13,3 +13,7 @@ dotenv = "0.15"  # For environment configuration
 clap = "3.0"  # Command-line argument parsing
 bcrypt = "0.11"  # For password hashing
 mysqlclient-sys = "0.4.0"
+sqlx = { version = "0.7", features = ["mysql", "runtime-tokio-native-tls"] }
+rpassword = "7.0"
+tokio = { version = "1.0", features = ["full"] }
+

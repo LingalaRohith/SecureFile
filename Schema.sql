@@ -65,8 +65,9 @@ CREATE TABLE IntegrityChecks (
     FOREIGN KEY (file_id) REFERENCES Files(file_id)
 );
 
-
-
+use Files;
+ALTER TABLE Users CHANGE COLUMN username email VARCHAR(255) UNIQUE NOT NULL;
+select * from Users;
 
 
 
