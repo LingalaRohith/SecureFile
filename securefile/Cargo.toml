@@ -5,7 +5,6 @@ authors = ["Rohith Lingala <rl92464@uga.edu>"]
 edition = "2021"
 
 [dependencies]
-chrono = "0.4"  # For handling timestamps
 aes = "0.6"  # For AES encryption
 base64 = "0.13"  # Encoding for encryption keys
 diesel = { version = "2.0", features = ["mysql"] }  # ORM for MySQL/PostgreSQL
@@ -16,4 +15,8 @@ mysqlclient-sys = "0.4.0"
 sqlx = { version = "0.7", features = ["mysql", "runtime-tokio-native-tls"] }
 rpassword = "7.0"
 tokio = { version = "1.0", features = ["full"] }
+chrono = { version = "0.4", features = ["serde"] }
+aes-gcm = "0.10"
+rand = "0.8"
+dialoguer = "0.10"
 
