@@ -1,12 +1,4 @@
-// use chrono::{DateTime, Utc};
-// use aes_gcm::{Aes256Gcm, Key, Nonce}; // AES encryption
-// #[allow(unused_imports)]
-// use aes_gcm::aead::{Aead, KeyInit, AeadInPlace};
-// use rand::Rng;
-// // use std::fs::{self, File};
-// use std::io::{self, Read, Write};
-// use std::path::PathBuf;
-// use std::fs::File;
+
 
 use aes_gcm::{Aes256Gcm, Key, Nonce}; // AES-GCM encryption
 use aes_gcm::aead::{KeyInit, AeadInPlace}; // Aead trait and AeadInPlace
@@ -16,6 +8,7 @@ use std::io::{self, Read, Write};
 use sqlx::mysql::MySqlPool; 
 use std::error::Error;
 
+#[allow(dead_code)]
 pub struct FileInfo {
     pub file_name: String,
     pub file_path: String,
@@ -64,22 +57,6 @@ pub async fn encrypt_and_save_file(file_name: &str, file_path: &str, key_input: 
     Ok(encrypted_file_path)
 }
 
-// use std::io::{self, Write};
-
-// pub async  fn admin_file_management() {
-//     let file_name = get_input("Enter the file name to encrypt (without .enc): ");
-//                 let file_path = get_input("Enter the full path of the file: ");
-//                 let key_input = get_input("Enter a 32-byte encryption key (32 characters long): ");
-
-//                 // Encrypt the file
-//                 match encrypt_and_save_file(&file_name, &file_path, key_input).await {
-//                     Ok(encrypted_file_path) => {
-//                         println!("File encrypted successfully!");
-//                         println!("Encrypted File Path: {}", encrypted_file_path);
-//                     }
-//                     Err(e) => eprintln!("Error encrypting file: {}", e),
-//                 }
-// }
 
 pub async fn admin_file_management(pool: &MySqlPool) {
     loop {

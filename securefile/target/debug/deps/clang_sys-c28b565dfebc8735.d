@@ -1,0 +1,14 @@
+C:\Users\tarun\Desktop\Rust\SecureFile\securefile\target\debug\deps\libclang_sys-c28b565dfebc8735.rmeta: C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\lib.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\support.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\link.rs C:\Users\tarun\Desktop\Rust\SecureFile\securefile\target\debug\build\clang-sys-5fb0d83d149fc0b7\out/macros.rs C:\Users\tarun\Desktop\Rust\SecureFile\securefile\target\debug\build\clang-sys-5fb0d83d149fc0b7\out/common.rs C:\Users\tarun\Desktop\Rust\SecureFile\securefile\target\debug\build\clang-sys-5fb0d83d149fc0b7\out/dynamic.rs
+
+C:\Users\tarun\Desktop\Rust\SecureFile\securefile\target\debug\deps\libclang_sys-c28b565dfebc8735.rlib: C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\lib.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\support.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\link.rs C:\Users\tarun\Desktop\Rust\SecureFile\securefile\target\debug\build\clang-sys-5fb0d83d149fc0b7\out/macros.rs C:\Users\tarun\Desktop\Rust\SecureFile\securefile\target\debug\build\clang-sys-5fb0d83d149fc0b7\out/common.rs C:\Users\tarun\Desktop\Rust\SecureFile\securefile\target\debug\build\clang-sys-5fb0d83d149fc0b7\out/dynamic.rs
+
+C:\Users\tarun\Desktop\Rust\SecureFile\securefile\target\debug\deps\clang_sys-c28b565dfebc8735.d: C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\lib.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\support.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\link.rs C:\Users\tarun\Desktop\Rust\SecureFile\securefile\target\debug\build\clang-sys-5fb0d83d149fc0b7\out/macros.rs C:\Users\tarun\Desktop\Rust\SecureFile\securefile\target\debug\build\clang-sys-5fb0d83d149fc0b7\out/common.rs C:\Users\tarun\Desktop\Rust\SecureFile\securefile\target\debug\build\clang-sys-5fb0d83d149fc0b7\out/dynamic.rs
+
+C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\lib.rs:
+C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\support.rs:
+C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\link.rs:
+C:\Users\tarun\Desktop\Rust\SecureFile\securefile\target\debug\build\clang-sys-5fb0d83d149fc0b7\out/macros.rs:
+C:\Users\tarun\Desktop\Rust\SecureFile\securefile\target\debug\build\clang-sys-5fb0d83d149fc0b7\out/common.rs:
+C:\Users\tarun\Desktop\Rust\SecureFile\securefile\target\debug\build\clang-sys-5fb0d83d149fc0b7\out/dynamic.rs:
+
+# env-dep:OUT_DIR=C:\\Users\\tarun\\Desktop\\Rust\\SecureFile\\securefile\\target\\debug\\build\\clang-sys-5fb0d83d149fc0b7\\out

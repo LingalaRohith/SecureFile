@@ -1,0 +1,12 @@
+C:\Users\tarun\Desktop\Rust\SecureFile\securefile\target\debug\deps\libbitflags-d3fbeea24e0ca855.rmeta: C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\lib.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\iter.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\parser.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\traits.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\public.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\internal.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\external.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\external\serde.rs
+
+C:\Users\tarun\Desktop\Rust\SecureFile\securefile\target\debug\deps\bitflags-d3fbeea24e0ca855.d: C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\lib.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\iter.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\parser.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\traits.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\public.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\internal.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\external.rs C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\external\serde.rs
+
+C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\lib.rs:
+C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\iter.rs:
+C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\parser.rs:
+C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\traits.rs:
+C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\public.rs:
+C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\internal.rs:
+C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\external.rs:
+C:\Users\tarun\.cargo\registry\src\index.crates.io-6f17d22bba15001f\bitflags-2.6.0\src\external\serde.rs:

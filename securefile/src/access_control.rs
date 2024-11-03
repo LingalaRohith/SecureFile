@@ -2,6 +2,7 @@
 use sqlx::{MySqlPool, query};
 use std::io::{self, Write};
 use std::str::FromStr;
+#[allow(dead_code)]
 pub struct AccessControl {
     pub file_id: u32,
     access_granted: bool,
@@ -55,11 +56,11 @@ pub async fn manage_access(pool: &MySqlPool) -> Result<(), Box<dyn std::error::E
 
     // Insert the new access control record into the UserAccessControl table
     query!(
-        "INSERT INTO UserAccessControl (file_id, access_granted, role_required, time_restricted) 
+        "INSERT INTO useraccesscontrol (file_id, access_granted, role_required, time_restricted)
          VALUES (?, ?, ?, ?)",
         file_id,
         access_granted,
-        role_required.to_string(),
+        role_required.to_string(),  // Convert UserRole to String here
         time_restricted,
     )
     .execute(pool)

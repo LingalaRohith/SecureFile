@@ -155,5 +155,25 @@ This project is a secure file management system built using Rust and MySQL. It p
      ```bash
      cargo build
      ```
+   - Run the application:
+     ```bash
+     cargo run
+     ```
+## Usage
+
+1. **User Registration**: 
+   - Register users by adding records in the `Users` table directly or through a CLI interface, if available. You can also insert users into the database via SQL queries.
+
+2. **Admin File Management**:
+   - **File Encryption and Upload**: Admin users can encrypt files and upload them. Follow these steps:
+     - Choose the option to encrypt a file in the admin menu.
+     - Enter the file name and the full file path.
+     - Provide a 32-character encryption key. This will encrypt the file and save it with an `.enc` extension.
+   - **Insert Metadata**: After encryption, insert file metadata (such as file name, path, encrypted key, and priority level) into the database. This metadata will be used to control access permissions.
+
+3. **File Retrieval**:
+   - **Decrypt File**: Authorized users can retrieve and decrypt files. Users need to:
+     - Enter the correct file name and encryption key.
+     - If they have the required permissions, the file will be decrypted and saved with a `.dec` extension, making it readable.
 
 
