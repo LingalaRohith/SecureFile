@@ -1,28 +1,27 @@
-mod user;
 mod file;
+mod user;
 // use file::admin_file_management;
 mod access_control;
 
-use std::io::{self, Write};
 use rpassword::read_password;
 use sqlx::{mysql::MySqlPool, Row};
 use std::error::Error;
+use std::io::{self, Write};
 use std::sync::Arc;
-
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Database connection setup
-    let database_url = "mysql://root:123@Rohith@localhost/Files";
+    let database_url = "mysql://root:mysql123@localhost/Files"; //your password and database name i forgot mysql123
     let pool = MySqlPool::connect(database_url).await?;
 
     // Login logic
     let email = get_input("Enter email: ");
     print!("Enter password: ");
-    io::stdout().flush()?;  // Flush prompt to stdout
+    io::stdout().flush()?; // Flush prompt to stdout
 
-    let password = read_password()?;  // Secure password input
-    let file_lock_manager = Arc::new(file::FileLockManager::new()); 
+    let password = read_password()?; // Secure password input
+    let file_lock_manager = Arc::new(file::FileLockManager::new());
 
     match user::authenticate_user(&pool, &email, &password).await {
         Ok(role) => {
@@ -30,9 +29,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             match role {
                 user::UserRole::Admin => admin_menu(&pool).await?,
-                user::UserRole::Manager => manager_menu(&pool,  file_lock_manager, &email).await?,//manager_menu(&pool, &email).await?,
-                user::UserRole::Director => manager_menu(&pool,  file_lock_manager, &email).await?,//director_menu(&pool, &email).await?,
-                user::UserRole::Developer => developer_menu(&pool, &email,role).await?,
+                user::UserRole::Manager => manager_menu(&pool, file_lock_manager, &email).await?, //manager_menu(&pool, &email).await?,
+                user::UserRole::Director => manager_menu(&pool, file_lock_manager, &email).await?, //director_menu(&pool, &email).await?,
+                user::UserRole::Developer => developer_menu(&pool, &email, role).await?,
             }
         }
         Err(e) => println!("{}", e),
@@ -40,9 +39,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
-
-
-
 
 async fn admin_menu(pool: &MySqlPool) -> Result<(), Box<dyn std::error::Error>> {
     loop {
@@ -68,39 +64,51 @@ async fn admin_menu(pool: &MySqlPool) -> Result<(), Box<dyn std::error::Error>> 
     Ok(())
 }
 
-async fn manager_menu(pool: &MySqlPool, file_lock_manager: Arc<file::FileLockManager>, email: &str) -> Result<(), Box<dyn std::error::Error>> {
-    loop{
-    println!("Manager Menu:");
-    let choice = get_input("Do you want to access files? (yes/no): ");
-    if choice.to_lowercase() != "yes" {
-        println!("Goodbye!");
-        return Ok(());
-    }
-
-    let filename = get_input("Enter file name: ");
-    let file_id = fetch_file_id(pool, &filename).await?;
-    let file_priority = fetch_file_priority(pool, file_id.try_into().unwrap()).await?;
-
-    if file_priority <= 3 {
-        println!("Access granted to the file with priority {}.", file_priority);
-        let edit_choice = get_input("Do you want to edit the file? (yes/no): ");
-        if edit_choice.to_lowercase() == "yes" {
-             // Check if the file is locked in the database
-     if file::check_if_file_locked(pool, file_id).await? {
-        println!("The file is currently locked. Please try again later.");
-        continue;
-    }
-    
-            file::decrypt_and_edit_file(pool, file_id.try_into().unwrap(), file_lock_manager.clone()).await?;
+async fn manager_menu(
+    pool: &MySqlPool,
+    file_lock_manager: Arc<file::FileLockManager>,
+    email: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
+    loop {
+        println!("Manager Menu:");
+        let choice = get_input("Do you want to access files? (yes/no): ");
+        if choice.to_lowercase() != "yes" {
+            println!("Goodbye!");
+            return Ok(());
         }
-    } else {
-        let choice = get_input("Access denied. You can only edit files with priority <= 3. View all the files Do you want to get read only file? (yes/no):");
-        if choice.to_lowercase() == "yes" {
-            decrypt_and_download_file(pool, file_id.try_into().unwrap()).await?;
+
+        let filename = get_input("Enter file name: ");
+        let file_id = fetch_file_id(pool, &filename).await?;
+        let file_priority = fetch_file_priority(pool, file_id.try_into().unwrap()).await?;
+
+        if file_priority <= 3 {
+            println!(
+                "Access granted to the file with priority {}.",
+                file_priority
+            );
+            let edit_choice = get_input("Do you want to edit the file? (yes/no): ");
+            if edit_choice.to_lowercase() == "yes" {
+                // Check if the file is locked in the database
+                if file::check_if_file_locked(pool, file_id).await? {
+                    println!("The file is currently locked. Please try again later.");
+                    continue;
+                }
+
+                file::decrypt_and_edit_file(
+                    pool,
+                    file_id.try_into().unwrap(),
+                    file_lock_manager.clone(),
+                )
+                .await?;
+            }
+        } else {
+            let choice = get_input("Access denied. You can only edit files with priority <= 3. View all the files Do you want to get read only file? (yes/no):");
+            if choice.to_lowercase() == "yes" {
+                decrypt_and_download_file(pool, file_id.try_into().unwrap()).await?;
+            }
         }
-    }
-    println!("Press Enter to quit.");
-    let choice = get_input("> ");
+        println!("Press Enter to quit.");
+        let choice = get_input("> ");
         if choice.is_empty() {
             println!("Exiting...");
             break;
@@ -109,41 +117,52 @@ async fn manager_menu(pool: &MySqlPool, file_lock_manager: Arc<file::FileLockMan
     Ok(())
 }
 
-async fn director_menu(pool: &MySqlPool,file_lock_manager: Arc<file::FileLockManager>, email: &str) -> Result<(), Box<dyn std::error::Error>> {
-    loop{
-    println!("Director Menu:");
-    let choice = get_input("Do you want to access files? (yes/no): ");
-    if choice.to_lowercase() != "yes" {
-        println!("Goodbye!");
-        return Ok(());
-    }
+async fn director_menu(
+    pool: &MySqlPool,
+    file_lock_manager: Arc<file::FileLockManager>,
+    email: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
+    loop {
+        println!("Director Menu:");
+        let choice = get_input("Do you want to access files? (yes/no): ");
+        if choice.to_lowercase() != "yes" {
+            println!("Goodbye!");
+            return Ok(());
+        }
 
-    let filename = get_input("Enter file name: ");
-    let file_id = fetch_file_id(pool, &filename).await?;
-    println!("Access granted to the file.");
+        let filename = get_input("Enter file name: ");
+        let file_id = fetch_file_id(pool, &filename).await?;
+        println!("Access granted to the file.");
 
-    let edit_choice = get_input("Do you want to edit the file? (yes/no): ");
-    if edit_choice.to_lowercase() == "yes" {
-         // Check if the file is locked in the database
-     if file::check_if_file_locked(pool, file_id).await? {
-        println!("The file is currently locked. Please try again later.");
-        continue;
-    }
-        file::decrypt_and_edit_file(pool, file_id.try_into().unwrap(), file_lock_manager.clone()).await?;
-    }
-    else{
-        decrypt_and_download_file(pool, file_id.try_into().unwrap()).await?;
-    }
+        let edit_choice = get_input("Do you want to edit the file? (yes/no): ");
+        if edit_choice.to_lowercase() == "yes" {
+            // Check if the file is locked in the database
+            if file::check_if_file_locked(pool, file_id).await? {
+                println!("The file is currently locked. Please try again later.");
+                continue;
+            }
+            file::decrypt_and_edit_file(
+                pool,
+                file_id.try_into().unwrap(),
+                file_lock_manager.clone(),
+            )
+            .await?;
+        } else {
+            decrypt_and_download_file(pool, file_id.try_into().unwrap()).await?;
+        }
     }
     Ok(())
 }
 
-async fn fetch_file_priority(pool: &MySqlPool, file_id: u32) -> Result<i32, Box<dyn std::error::Error>> {
+async fn fetch_file_priority(
+    pool: &MySqlPool,
+    file_id: u32,
+) -> Result<i32, Box<dyn std::error::Error>> {
     // let row = sqlx::query!("SELECT priority_level FROM Files WHERE file_id = ?", file_id)
     //     .fetch_one(pool)
     //     .await?;
 
-        let row = sqlx::query("SELECT priority_level FROM Files WHERE file_id = ?")
+    let row = sqlx::query("SELECT priority_level FROM Files WHERE file_id = ?")
         .bind(file_id)
         .fetch_optional(pool)
         .await?
@@ -157,7 +176,6 @@ async fn fetch_file_priority(pool: &MySqlPool, file_id: u32) -> Result<i32, Box<
     // Ok(row.priority_level)
 }
 
-
 async fn developer_menu(
     pool: &MySqlPool,
     _email: &str,
@@ -165,8 +183,7 @@ async fn developer_menu(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let choice = get_input("Are you here to access files? (yes/no): ");
     if choice.to_lowercase() != "yes" {
-       
-            println!("Goodbye!");
+        println!("Goodbye!");
         return Ok(());
     }
 
@@ -179,11 +196,10 @@ async fn developer_menu(
     if access_granted {
         println!("Access granted. Decrypting and downloading the file...");
         decrypt_and_download_file(pool, file_id.try_into().unwrap()).await?;
-         // Check if the role is Manager or Director and prompt for edit option
+        // Check if the role is Manager or Director and prompt for edit option
         //  if matches!(role, user::UserRole::Manager | user::UserRole::Director) {
         //  file::edit_file(pool, file_id.try_into().unwrap()).await?;
         //  }
-        
     } else {
         println!("Access denied. You do not have the required permissions.");
     }
@@ -191,7 +207,10 @@ async fn developer_menu(
     Ok(())
 }
 
-async fn fetch_file_id(pool: &MySqlPool, filename: &str) -> Result<i32, Box<dyn std::error::Error>> {
+async fn fetch_file_id(
+    pool: &MySqlPool,
+    filename: &str,
+) -> Result<i32, Box<dyn std::error::Error>> {
     let row = sqlx::query("SELECT file_id FROM Files WHERE file_name = ?")
         .bind(filename)
         .fetch_optional(pool)
@@ -240,7 +259,6 @@ async fn check_access(
 // let encryption_key = String::from_utf8(row.get("encrypted_key"))
 //     .expect("Failed to convert encryption key to string");
 
-
 //     // Placeholder for decryption logic
 //     println!(
 //         "Decrypting file from path: {} with key: {}...",
@@ -259,10 +277,7 @@ async fn check_access(
 // use sqlx::{MySqlPool, Row};
 // use std::error::Error;
 
-async fn decrypt_and_download_file(
-    pool: &MySqlPool,
-    _file_id: i32,
-) -> Result<(), Box<dyn Error>> {
+async fn decrypt_and_download_file(pool: &MySqlPool, _file_id: i32) -> Result<(), Box<dyn Error>> {
     // Query to get file information
     let row = sqlx::query("SELECT file_id, file_path, encrypted_key FROM Files WHERE file_id = ?")
         .bind(_file_id)
@@ -302,4 +317,3 @@ fn get_input(prompt: &str) -> String {
     io::stdin().read_line(&mut input).unwrap();
     input.trim().to_string()
 }
-
