@@ -2,13 +2,12 @@
 use sqlx::{MySqlPool, query};
 use std::io::{self, Write};
 use std::str::FromStr;
-#[allow(dead_code)]
-pub struct AccessControl {
-    pub file_id: u32,
-    access_granted: bool,
-    pub role_required: UserRole,
-    pub time_restricted: bool,
-}
+// pub struct AccessControl {
+//     pub file_id: u32,
+//     access_granted: bool,
+//     pub role_required: UserRole,
+//     pub time_restricted: bool,
+// }
 
 #[derive(Debug)]
 pub enum UserRole {
@@ -34,6 +33,61 @@ impl FromStr for UserRole {
 }
 
 
+// pub async fn manage_access(pool: &MySqlPool) -> Result<(), Box<dyn std::error::Error>> {
+//     println!("Managing access control...");
+
+//     let file_id: u32 = get_input("Enter file ID: ").parse()
+//         .map_err(|_| "Invalid file ID")?;
+
+//     let access_granted = get_input("Access granted? (yes/no): ")
+//         .to_lowercase() == "yes";
+
+//     let role_required = loop {
+//         let role_input = get_input("Enter required role (admin, developer, manager, director): ");
+//         match role_input.parse::<UserRole>() {
+//             Ok(role) => break role,
+//             Err(e) => println!("Error: {}", e),
+//         }
+//     };
+
+//     let time_restricted = get_input("Time restricted? (yes/no): ")
+//         .to_lowercase() == "yes";
+
+//     // Insert the new access control record into the UserAccessControl table
+//     // query!(
+//     //     "INSERT INTO UserAccessControl (file_id, access_granted, role_required, time_restricted) 
+//     //      VALUES (?, ?, ?, ?)",
+//     //     file_id,
+//     //     access_granted,
+//     //     role_required.to_string(),
+//     //     time_restricted,
+//     // ).execute(pool)
+//     // .await?;
+
+//     let result = sqlx::query("INSERT INTO UserAccessControl (file_id, access_granted, role_required, time_restricted) VALUES (?, ?, ?, ?)")
+//         .bind(file_id)
+//         .bind(access_granted)
+//         .bind(role_required.to_string())
+//         .bind(time_restricted)
+//         .execute(pool)
+//         .await;
+
+//     match result {
+//         Ok(_) => {
+//             println!("User added successfully!");
+//             Ok(())
+//         }
+//         Err(e) => {
+//             println!("Error adding user: {:?}", e);
+//             Err("Failed to add user to the database.".to_string())
+//         }
+//     }
+
+//             println!("Access control entry added successfully.");
+//             Ok(())
+       
+// }
+
 pub async fn manage_access(pool: &MySqlPool) -> Result<(), Box<dyn std::error::Error>> {
     println!("Managing access control...");
 
@@ -54,21 +108,27 @@ pub async fn manage_access(pool: &MySqlPool) -> Result<(), Box<dyn std::error::E
     let time_restricted = get_input("Time restricted? (yes/no): ")
         .to_lowercase() == "yes";
 
-    // Insert the new access control record into the UserAccessControl table
-    query!(
-        "INSERT INTO useraccesscontrol (file_id, access_granted, role_required, time_restricted)
-         VALUES (?, ?, ?, ?)",
-        file_id,
-        access_granted,
-        role_required.to_string(),  // Convert UserRole to String here
-        time_restricted,
-    )
-    .execute(pool)
-    .await?;
+    // Execute the SQL query to insert access control record
+    let result = sqlx::query("INSERT INTO UserAccessControl (file_id, access_granted, role_required, time_restricted) VALUES (?, ?, ?, ?)")
+        .bind(file_id)
+        .bind(access_granted)
+        .bind(role_required.to_string())
+        .bind(time_restricted)
+        .execute(pool)
+        .await;
 
-    println!("Access control entry added successfully.");
-    Ok(())
+    match result {
+        Ok(_) => {
+            println!("User added successfully!");
+            return Ok(());
+        }
+        Err(e) => {
+            println!("Error adding user: {:?}", e);
+            return Err("Failed to add user to the database.".into());
+        }
+    }
 }
+
 
 // Helper function to get user input
 fn get_input(prompt: &str) -> String {

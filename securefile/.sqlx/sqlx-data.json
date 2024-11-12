@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "INSERT INTO UserAccessControl (file_id, access_granted, role_required, time_restricted) \n         VALUES (?, ?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "cdced9e68a6498f43661ac620945ffc3e621e90225a2a2ef3033aa5dd81936cc"
+}
