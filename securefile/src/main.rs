@@ -139,11 +139,22 @@ async fn director_menu(pool: &MySqlPool,file_lock_manager: Arc<file::FileLockMan
 }
 
 async fn fetch_file_priority(pool: &MySqlPool, file_id: u32) -> Result<i32, Box<dyn std::error::Error>> {
-    let row = sqlx::query!("SELECT priority_level FROM Files WHERE file_id = ?", file_id)
-        .fetch_one(pool)
-        .await?;
+    // let row = sqlx::query!("SELECT priority_level FROM Files WHERE file_id = ?", file_id)
+    //     .fetch_one(pool)
+    //     .await?;
 
-    Ok(row.priority_level)
+        let row = sqlx::query("SELECT priority_level FROM Files WHERE file_id = ?")
+        .bind(file_id)
+        .fetch_optional(pool)
+        .await?
+        .ok_or("File not found.")?;
+
+    // Retrieve the priority level from the row
+    let priority_level: i32 = row.try_get("priority_level")?;
+
+    Ok(priority_level)
+
+    // Ok(row.priority_level)
 }
 
 
