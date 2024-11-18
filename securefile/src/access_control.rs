@@ -2,12 +2,6 @@
 use sqlx::{query, MySqlPool};
 use std::io::{self, Write};
 use std::str::FromStr;
-// pub struct AccessControl {
-//     pub file_id: u32,
-//     access_granted: bool,
-//     pub role_required: UserRole,
-//     pub time_restricted: bool,
-// }
 
 #[derive(Debug)]
 pub enum UserRole {

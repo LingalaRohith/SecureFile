@@ -12,7 +12,7 @@ use std::sync::Arc;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Database connection setup
-    let database_url = "mysql://root:mysql123@localhost/Files"; //your password and database name i forgot mysql123
+    let database_url = "mysql://root:123%40Rohith@localhost/Files"; //your password and database name i forgot mysql123
     let pool = MySqlPool::connect(database_url).await?;
 
     // Login logic
@@ -237,45 +237,6 @@ async fn check_access(
 
     Ok(row.map_or(false, |r| r.get::<bool, _>("access_granted")))
 }
-
-// async fn decrypt_and_download_file(
-//     pool: &MySqlPool,
-//     _file_id: i32,
-// ) -> Result<(), Box<dyn std::error::Error>> {
-//     let _file_name = String::new();
-// // println!("Enter file name: ");
-// // std::io::stdin().read_line(&mut file_name).expect("Failed to read input");
-// // Remove any trailing newline characters
-// // let file_name = file_name.trim();
-
-//     let row = sqlx::query("SELECT file_id, file_path, encrypted_key FROM Files WHERE file_id = ?")
-//     .bind(_file_id)
-//     .fetch_one(pool)
-//     .await?;
-
-// let _file_id: i32 = row.get("file_id");  // Use i32 for INT columns
-// let file_path: String = row.get("file_path");
-// // let encryption_key: String = row.get("encrypted_key");
-// let encryption_key = String::from_utf8(row.get("encrypted_key"))
-//     .expect("Failed to convert encryption key to string");
-
-//     // Placeholder for decryption logic
-//     println!(
-//         "Decrypting file from path: {} with key: {}...",
-//         file_path, encryption_key
-//     );
-
-//     let decrypted_content = file::decrypt_file(&file_path, &encryption_key).await?;
-//     println!("Decrypted content: {}", decrypted_content);
-
-//     // Simulate downloading the decrypted file
-//     println!("File decrypted and downloaded successfully!");
-
-//     Ok(())
-// }
-
-// use sqlx::{MySqlPool, Row};
-// use std::error::Error;
 
 async fn decrypt_and_download_file(pool: &MySqlPool, _file_id: i32) -> Result<(), Box<dyn Error>> {
     // Query to get file information
