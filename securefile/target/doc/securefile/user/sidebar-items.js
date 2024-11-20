@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["UserRole"],"fn":["add_user_to_db","authenticate_user","get_input","user_management_menu"]};

@@ -1,0 +1,1 @@
+searchState.loadedDescShard("blowfish", 0, "Pure Rust implementation of the Blowfish block cipher.\nBlowfish block cipher instance.\nBlowfish variant which uses Little Endian byte order …\nEncrypt\nExpand key\nInit state\nReturns the argument unchanged.\nCalls <code>U::from(self)</code>.\nSalted expand key")

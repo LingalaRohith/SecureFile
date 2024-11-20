@@ -16,17 +16,35 @@ use std::sync::Arc;
 use tokio::sync::Mutex;
 use std::collections::HashMap;
 use tokio::sync::RwLock;
+
+/// Manages file locks in memory to prevent concurrent file operations.
 pub struct FileLockManager {
     file_locks: RwLock<HashMap<i32, Arc<Mutex<()>>>>,
 }
 
 impl FileLockManager {
+        /// Creates a new instance of `FileLockManager` with an empty set of file locks.
+    ///
+    /// # Returns
+    /// 
+    /// Returns a new `FileLockManager` instance.
     pub fn new() -> Self {
         FileLockManager {
             file_locks: RwLock::new(HashMap::new()),
         }
     }
 
+     /// Locks a file in memory.
+    ///
+    /// This function ensures that only one task can lock a file at a time using a `Mutex`.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `file_id` - The ID of the file to be locked.
+    ///
+    /// # Returns
+    ///
+    /// Returns an `Arc<Mutex<()>>` for the given file lock.
     // Lock a file in memory
     async fn lock_file(&self, file_id: i32) -> Arc<Mutex<()>> {
         let mut file_locks = self.file_locks.write().await;
@@ -36,6 +54,17 @@ impl FileLockManager {
             .clone()
     }
 }
+
+/// Locks a file in the database by updating the `locked` status to `TRUE`.
+///
+/// # Arguments
+///
+/// * `pool` - The MySQL connection pool for the database.
+/// * `file_id` - The ID of the file to be locked.
+///
+/// # Returns
+///
+/// Returns `Result<(), Box<dyn std::error::Error>>` indicating success or failure.
 
 pub async fn lock_file_in_db(pool: &MySqlPool, file_id: i32) -> Result<(), Box<dyn std::error::Error>> {
     // Attempt to lock the file in the database
@@ -52,6 +81,17 @@ pub async fn lock_file_in_db(pool: &MySqlPool, file_id: i32) -> Result<(), Box<d
     Ok(())
 }
 
+/// Unlocks a file in the database by updating the `locked` status to `FALSE`.
+///
+/// # Arguments
+///
+/// * `pool` - The MySQL connection pool for the database.
+/// * `file_id` - The ID of the file to be unlocked.
+///
+/// # Returns
+///
+/// Returns `Result<(), Box<dyn std::error::Error>>` indicating success or failure.
+
 pub async fn unlock_file_in_db(pool: &MySqlPool, file_id: i32) -> Result<(), Box<dyn std::error::Error>> {
     sqlx::query("UPDATE Files SET locked = FALSE WHERE file_id = ?")
         .bind(file_id)
@@ -59,6 +99,17 @@ pub async fn unlock_file_in_db(pool: &MySqlPool, file_id: i32) -> Result<(), Box
         .await?;
     Ok(())
 }
+
+/// Checks if a file is locked in the database.
+///
+/// # Arguments
+///
+/// * `pool` - The MySQL connection pool for the database.
+/// * `file_id` - The ID of the file to check.
+///
+/// # Returns
+///
+/// Returns `Result<bool, Box<dyn std::error::Error>>` indicating whether the file is locked (`true`) or not (`false`).
 
 pub async fn check_if_file_locked(pool: &MySqlPool, file_id: i32) -> Result<bool, Box<dyn std::error::Error>> {
     // Query to check if the file is locked in the database
@@ -70,6 +121,43 @@ pub async fn check_if_file_locked(pool: &MySqlPool, file_id: i32) -> Result<bool
     Ok(row.0)  // Return the locked status (true or false)
 }
 
+/// Encrypts a file and saves the encrypted content to a new file using AES-GCM.
+///
+/// AES-GCM (Advanced Encryption Standard in Galois/Counter Mode) is a mode of encryption that combines
+/// the security of AES with the efficiency of Galois/Counter Mode, providing authenticated encryption with
+/// both confidentiality and integrity. This function uses the AES-256 variant of AES-GCM, which requires
+/// a 256-bit key for encryption and a 12-byte nonce for each encryption operation.
+///
+/// # Arguments
+///
+/// * `file_name` - The name of the file to encrypt. The encrypted file will be saved with this name and 
+///   an `.enc` extension.
+/// * `file_path` - The full path to the file to encrypt.
+/// * `key_input` - The 32-byte encryption key as a string. This key will be used to encrypt the file.
+///
+/// # Returns
+///
+/// Returns `Result<String, Box<dyn std::error::Error>>`, containing the path of the encrypted file or an error.
+///
+/// # How it works:
+///
+/// 1. The function opens and reads the content of the file specified by `file_path`.
+/// 2. A random 12-byte nonce is generated using `rand::thread_rng()` to ensure that each encryption
+///    operation is unique, even if the same key is used.
+/// 3. The encryption is performed using AES-GCM with the provided 32-byte key (`Aes256Gcm`), which uses 
+///    AES with a 256-bit key in Galois/Counter Mode (GCM) to provide authenticated encryption.
+/// 4. The encrypted content is written to a new file, where the nonce is prepended to the encrypted data 
+///    to ensure it can be used for decryption later.
+///
+/// # Example:
+/// ```rust
+/// let file_name = "example.txt";
+/// let file_path = "/path/to/example.txt";
+/// let key_input = "32-byte-key-here-please-ensure-it-is-exactly-32-bytes"; // Replace with a real key
+///
+/// let encrypted_file = encrypt_and_save_file(file_name, file_path, key_input).await.unwrap();
+/// println!("Encrypted file saved at: {}", encrypted_file);
+/// ```
 pub async fn encrypt_and_save_file(file_name: &str, file_path: &str, key_input: String) -> Result<String, Box<dyn std::error::Error>> {
     // Step 1: Read the file content
     let mut file = File::open(file_path).map_err(|e| {
@@ -109,6 +197,15 @@ pub async fn encrypt_and_save_file(file_name: &str, file_path: &str, key_input: 
 }
 
 
+/// Handles the admin interface for file management (encryption and metadata insertion).
+///
+/// This function runs an interactive CLI loop where the admin can choose between encrypting a file
+/// or inserting file metadata into the database.
+///
+/// # Arguments
+///
+/// * `pool` - The MySQL connection pool for the database.
+
 pub async fn admin_file_management(pool: &MySqlPool) {
     loop {
         println!("\n--- Admin File Management ---");
@@ -135,6 +232,11 @@ pub async fn admin_file_management(pool: &MySqlPool) {
     }
 }
 
+/// Encrypts a file using the provided key and path, displaying the result to the user.
+///
+/// # Returns
+///
+/// Returns `Result<String, Box<dyn std::error::Error>>` with the encrypted file path or an error.
 async fn encrypt_file() {
     let file_name = get_input("Enter the file name to encrypt: ");
     let file_path = get_input("Enter the full path of the file: ");
@@ -148,6 +250,16 @@ async fn encrypt_file() {
         Err(e) => eprintln!("Error encrypting file: {}", e),
     }
 }
+
+/// Inserts file metadata into the database.
+///
+/// # Arguments
+///
+/// * `pool` - The MySQL connection pool for the database.
+///
+/// # Returns
+///
+/// Returns `Result<(), Box<dyn std::error::Error>>`, indicating success or failure.
 
 async fn insert_file_metadata(pool: &MySqlPool) -> Result<(), Box<dyn Error>> {
     let file_name = get_input("Enter the encrypted file name: ");
@@ -166,6 +278,16 @@ async fn insert_file_metadata(pool: &MySqlPool) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// Decrypts an encrypted file and returns the decrypted content.
+///
+/// # Arguments
+///
+/// * `encrypted_file_path` - The path of the encrypted file.
+/// * `encrypted_key_base64` - The Base64-encoded encryption key.
+///
+/// # Returns
+///
+/// Returns `Result<String, Box<dyn std::error::Error>>`, containing the path of the decrypted file or an error.
 
 pub async fn decrypt_file(encrypted_file_path: &str, encrypted_key_base64: &[u8]) -> Result<String, Box<dyn std::error::Error>> {
     // Step 1: Open the encrypted file

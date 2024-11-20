@@ -9,6 +9,7 @@ use std::error::Error;
 use std::io::{self, Write};
 use std::sync::Arc;
 
+/// Entry point of the application. Manages user login and routes to respective menus based on user role.
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Database connection setup
@@ -30,7 +31,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             match role {
                 user::UserRole::Admin => admin_menu(&pool).await?,
                 user::UserRole::Manager => manager_menu(&pool, file_lock_manager, &email).await?, //manager_menu(&pool, &email).await?,
-                user::UserRole::Director => manager_menu(&pool, file_lock_manager, &email).await?, //director_menu(&pool, &email).await?,
+                user::UserRole::Director => director_menu(&pool, file_lock_manager, &email).await?, //director_menu(&pool, &email).await?,
                 user::UserRole::Developer => developer_menu(&pool, &email, role).await?,
             }
         }
@@ -39,6 +40,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+
+/// Displays the Admin menu and handles corresponding functionality.
+///
+/// # Arguments
+///
+/// * `pool` - A reference to the MySQL database connection pool.
+///
+/// # Errors
+///
+/// Returns an error if database operations or user input fail.
 
 async fn admin_menu(pool: &MySqlPool) -> Result<(), Box<dyn std::error::Error>> {
     loop {
@@ -63,6 +74,18 @@ async fn admin_menu(pool: &MySqlPool) -> Result<(), Box<dyn std::error::Error>> 
     }
     Ok(())
 }
+
+/// Displays the Manager menu and provides file access based on priority.
+///
+/// # Arguments
+///
+/// * `pool` - A reference to the MySQL database connection pool.
+/// * `file_lock_manager` - A shared reference to the file lock manager.
+/// * `email` - The email of the logged-in user.
+///
+/// # Errors
+///
+/// Returns an error if database operations fail or user input is invalid.
 
 async fn manager_menu(
     pool: &MySqlPool,
@@ -117,6 +140,17 @@ async fn manager_menu(
     Ok(())
 }
 
+/// Handles the menu for the Director role, allowing them to access and edit files.
+///
+/// # Arguments
+/// * `pool` - A reference to the MySQL database connection pool.
+/// * `file_lock_manager` - A shared instance of the file lock manager to handle file locking.
+/// * `email` - The email address of the logged-in director.
+///
+/// # Returns
+/// * `Result<(), Box<dyn std::error::Error>>` - Returns an `Ok` result if the operation completes successfully, otherwise returns an error.
+
+
 async fn director_menu(
     pool: &MySqlPool,
     file_lock_manager: Arc<file::FileLockManager>,
@@ -154,6 +188,21 @@ async fn director_menu(
     Ok(())
 }
 
+/// Retrieves the file priority from the database.
+///
+/// # Arguments
+///
+/// * `pool` - A reference to the MySQL database connection pool.
+/// * `file_id` - The ID of the file.
+///
+/// # Returns
+///
+/// The priority level of the file.
+///
+/// # Errors
+///
+/// Returns an error if the file is not found or a database error occurs.
+
 async fn fetch_file_priority(
     pool: &MySqlPool,
     file_id: u32,
@@ -175,6 +224,17 @@ async fn fetch_file_priority(
 
     // Ok(row.priority_level)
 }
+
+/// Handles the menu for the Developer role, allowing them to access files if permitted.
+///
+/// # Arguments
+/// * `pool` - A reference to the MySQL database connection pool.
+/// * `_email` - The email address of the logged-in developer.
+/// * `role` - The role of the user (Developer).
+///
+/// # Returns
+/// * `Result<(), Box<dyn std::error::Error>>` - Returns an `Ok` result if the operation completes successfully, otherwise returns an error.
+
 
 async fn developer_menu(
     pool: &MySqlPool,
@@ -207,6 +267,16 @@ async fn developer_menu(
     Ok(())
 }
 
+/// Fetches the file ID for a given file name from the database.
+///
+/// # Arguments
+/// * `pool` - A reference to the MySQL database connection pool.
+/// * `filename` - The name of the file for which to fetch the ID.
+///
+/// # Returns
+/// * `Result<i32, Box<dyn std::error::Error>>` - The ID of the file if found, or an error if not found.
+
+
 async fn fetch_file_id(
     pool: &MySqlPool,
     filename: &str,
@@ -219,6 +289,17 @@ async fn fetch_file_id(
 
     Ok(row.get("file_id"))
 }
+
+/// Checks whether a user role has access to a file based on its ID.
+///
+/// # Arguments
+/// * `pool` - A reference to the MySQL database connection pool.
+/// * `file_id` - The ID of the file to check access for.
+/// * `role` - The role of the user attempting to access the file.
+///
+/// # Returns
+/// * `Result<bool, Box<dyn std::error::Error>>` - Returns `true` if access is granted, otherwise `false`.
+
 
 async fn check_access(
     pool: &MySqlPool,
@@ -237,6 +318,15 @@ async fn check_access(
 
     Ok(row.map_or(false, |r| r.get::<bool, _>("access_granted")))
 }
+
+/// Decrypts a file and simulates its download.
+///
+/// # Arguments
+/// * `pool` - A reference to the MySQL database connection pool.
+/// * `_file_id` - The ID of the file to decrypt and download.
+///
+/// # Returns
+/// * `Result<(), Box<dyn std::error::Error>>` - Returns an `Ok` result if the operation completes successfully, otherwise returns an error.
 
 async fn decrypt_and_download_file(pool: &MySqlPool, _file_id: i32) -> Result<(), Box<dyn Error>> {
     // Query to get file information
@@ -268,6 +358,16 @@ async fn decrypt_and_download_file(pool: &MySqlPool, _file_id: i32) -> Result<()
 
     Ok(())
 }
+
+/// Helper function to get user input from the terminal.
+///
+/// # Arguments
+///
+/// * `prompt` - The prompt message to display to the user.
+///
+/// # Returns
+///
+/// The input string entered by the user.
 
 // Helper function to get user input
 fn get_input(prompt: &str) -> String {
