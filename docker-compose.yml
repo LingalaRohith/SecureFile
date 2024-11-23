@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: Files
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306" # Expose MySQL to the host machine
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./rust/Schema.sql:/docker-entrypoint-initdb.d/Schema.sql # Load schema at startup
+    networks:
+      - rust_network
+
+  rust-app:
+    build:
+      context: ./rust
+      dockerfile: Dockerfile
+    container_name: rust_app_container
+    depends_on:
+      - mysql
+    environment:
+      DATABASE_URL: mysql://root:root@mysql_container:3306/Files # Use MySQL service name
+    ports:
+      - "8080:8080" # Expose Rust app to the host machine
+    networks:
+      - rust_network
+
+volumes:
+  mysql_data:
+
+networks:
+  rust_network:
+
