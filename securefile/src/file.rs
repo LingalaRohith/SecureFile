@@ -1,3 +1,4 @@
+#[warn(unused_imports)]
 use aes_gcm::{Aes256Gcm, Key, Nonce}; // AES-GCM encryption
 use aes_gcm::aead::{KeyInit, AeadInPlace}; // Aead trait and AeadInPlace
 use rand::Rng; // For generating random keys
@@ -5,12 +6,13 @@ use std::io::{self, Read, Write};
 use sqlx::mysql::MySqlPool; 
 use std::error::Error;
 
-use aes_gcm::{ aead::{Aead, generic_array::GenericArray}};
-use anyhow::{Result, Context};
+// use aes_gcm::{ aead::{Aead, generic_array::GenericArray}};
+// use aes_gcm::{aead::Aead};
+use anyhow::{Result};
 use std::fs::{File, OpenOptions};
 
-use aes::{Aes256, NewBlockCipher};
-use base64::{encode, decode};
+// use aes::{Aes256, NewBlockCipher};
+use base64::{decode};
 use hex;
 use std::sync::Arc;
 use tokio::sync::Mutex;
@@ -18,6 +20,7 @@ use std::collections::HashMap;
 use tokio::sync::RwLock;
 
 /// Manages file locks in memory to prevent concurrent file operations.
+#[allow(dead_code)]
 pub struct FileLockManager {
     file_locks: RwLock<HashMap<i32, Arc<Mutex<()>>>>,
 }
@@ -46,6 +49,7 @@ impl FileLockManager {
     ///
     /// Returns an `Arc<Mutex<()>>` for the given file lock.
     // Lock a file in memory
+    #[allow(dead_code)]
     async fn lock_file(&self, file_id: i32) -> Arc<Mutex<()>> {
         let mut file_locks = self.file_locks.write().await;
         file_locks
@@ -151,13 +155,14 @@ pub async fn check_if_file_locked(pool: &MySqlPool, file_id: i32) -> Result<bool
 ///
 /// # Example:
 /// ```rust
-/// let file_name = "example.txt";
-/// let file_path = "/path/to/example.txt";
-/// let key_input = "32-byte-key-here-please-ensure-it-is-exactly-32-bytes"; // Replace with a real key
-///
-/// let encrypted_file = encrypt_and_save_file(file_name, file_path, key_input).await.unwrap();
-/// println!("Encrypted file saved at: {}", encrypted_file);
+// / let file_name = "example.txt";
+// / let file_path = "/path/to/example.txt";
+// / let key_input = "32-byte-key-here-please-ensure-it-is-exactly-32-bytes"; // Replace with a real key
+// /
+// / let encrypted_file = encrypt_and_save_file(file_name, file_path, key_input).await.unwrap();
+// / println!("Encrypted file saved at: {}", encrypted_file);
 /// ```
+/// 
 pub async fn encrypt_and_save_file(file_name: &str, file_path: &str, key_input: String) -> Result<String, Box<dyn std::error::Error>> {
     // Step 1: Read the file content
     let mut file = File::open(file_path).map_err(|e| {
@@ -237,7 +242,7 @@ pub async fn admin_file_management(pool: &MySqlPool) {
 /// # Returns
 ///
 /// Returns `Result<String, Box<dyn std::error::Error>>` with the encrypted file path or an error.
-async fn encrypt_file() {
+pub async fn encrypt_file() {
     let file_name = get_input("Enter the file name to encrypt: ");
     let file_path = get_input("Enter the full path of the file: ");
     let key_input = get_input("Enter a 32-character encryption key: ");
@@ -306,7 +311,7 @@ pub async fn decrypt_file(encrypted_file_path: &str, encrypted_key_base64: &[u8]
     println!("Nonce (hex): {:?}", hex::encode(nonce_bytes));
 
     // Step 4: Decode the Base64 encoded encryption key
-    let decoded_key = decode(encrypted_key_base64).map_err(|e| {
+    let _decoded_key = decode(encrypted_key_base64).map_err(|e| {
         eprintln!("Failed to decode Base64 key: {}. Please check the format.", e);
         e
     })?;
@@ -358,7 +363,8 @@ pub async fn decrypt_file(encrypted_file_path: &str, encrypted_key_base64: &[u8]
     }
 }
 
-pub async fn decrypt_and_edit_file(pool: &MySqlPool, file_id: i32, file_lock_manager: Arc<FileLockManager>) -> Result<(), Box<dyn Error>> {
+#[warn(unused_variables)]
+pub async fn decrypt_and_edit_file(pool: &MySqlPool, file_id: i32, _file_lock_manager: Arc<FileLockManager>) -> Result<(), Box<dyn Error>> {
     // Get user input for the encryption key and new content
     // let encryption_key_input = get_input("Enter the encryption key (Base64 encoded): ");
     eprintln!("locking file with ID: {}", file_id);
@@ -393,7 +399,7 @@ pub async fn decrypt_and_edit_file(pool: &MySqlPool, file_id: i32, file_lock_man
     Ok(())
 }
 
-async fn reencrypt_and_save_file(pool: &MySqlPool,file_id: i32,file_path: &str, encryption_key: &[u8], content: &str) -> Result<(), Box<dyn Error>> {
+pub async fn reencrypt_and_save_file(pool: &MySqlPool,file_id: i32,file_path: &str, encryption_key: &[u8], content: &str) -> Result<(), Box<dyn Error>> {
     // Generate a new nonce
     let nonce_bytes: [u8; 12] = rand::thread_rng().gen();
     let nonce = Nonce::from_slice(&nonce_bytes);

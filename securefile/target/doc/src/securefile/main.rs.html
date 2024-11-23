@@ -393,7 +393,7 @@
 </span><span class="attr">#[tokio::main]
 </span><span class="kw">async fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
     <span class="comment">// Database connection setup
-    </span><span class="kw">let </span>database_url = <span class="string">"mysql://root:123%40Rohith@localhost/Files"</span>; <span class="comment">//your password and database name i forgot mysql123
+    </span><span class="kw">let </span>database_url = <span class="string">"mysql://root:123%40Rohith@localhost:3306/Files"</span>; <span class="comment">//your password and database name i forgot mysql123
     </span><span class="kw">let </span>pool = MySqlPool::connect(database_url).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="comment">// Login logic
@@ -411,7 +411,7 @@
             <span class="kw">match </span>role {
                 user::UserRole::Admin =&gt; admin_menu(<span class="kw-2">&amp;</span>pool).<span class="kw">await</span><span class="question-mark">?</span>,
                 user::UserRole::Manager =&gt; manager_menu(<span class="kw-2">&amp;</span>pool, file_lock_manager, <span class="kw-2">&amp;</span>email).<span class="kw">await</span><span class="question-mark">?</span>, <span class="comment">//manager_menu(&amp;pool, &amp;email).await?,
-                </span>user::UserRole::Director =&gt; manager_menu(<span class="kw-2">&amp;</span>pool, file_lock_manager, <span class="kw-2">&amp;</span>email).<span class="kw">await</span><span class="question-mark">?</span>, <span class="comment">//director_menu(&amp;pool, &amp;email).await?,
+                </span>user::UserRole::Director =&gt; director_menu(<span class="kw-2">&amp;</span>pool, file_lock_manager, <span class="kw-2">&amp;</span>email).<span class="kw">await</span><span class="question-mark">?</span>, <span class="comment">//director_menu(&amp;pool, &amp;email).await?,
                 </span>user::UserRole::Developer =&gt; developer_menu(<span class="kw-2">&amp;</span>pool, <span class="kw-2">&amp;</span>email, role).<span class="kw">await</span><span class="question-mark">?</span>,
             }
         }

@@ -13,7 +13,7 @@ use std::sync::Arc;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Database connection setup
-    let database_url = "mysql://root:123%40Rohith@localhost/Files"; //your password and database name i forgot mysql123
+    let database_url = "mysql://root:123%40Rohith@localhost:3306/Files"; //your password and database name i forgot mysql123
     let pool = MySqlPool::connect(database_url).await?;
 
     // Login logic
@@ -90,7 +90,7 @@ async fn admin_menu(pool: &MySqlPool) -> Result<(), Box<dyn std::error::Error>> 
 async fn manager_menu(
     pool: &MySqlPool,
     file_lock_manager: Arc<file::FileLockManager>,
-    email: &str,
+    _email: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
     loop {
         println!("Manager Menu:");
@@ -154,14 +154,15 @@ async fn manager_menu(
 async fn director_menu(
     pool: &MySqlPool,
     file_lock_manager: Arc<file::FileLockManager>,
-    email: &str,
+    _email: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
     loop {
         println!("Director Menu:");
         let choice = get_input("Do you want to access files? (yes/no): ");
         if choice.to_lowercase() != "yes" {
             println!("Goodbye!");
-            return Ok(());
+            break;
+            // return Ok(());
         }
 
         let filename = get_input("Enter file name: ");
@@ -185,6 +186,7 @@ async fn director_menu(
             decrypt_and_download_file(pool, file_id.try_into().unwrap()).await?;
         }
     }
+    #[warn(unreachable_code)]
     Ok(())
 }
 
@@ -328,7 +330,7 @@ async fn check_access(
 /// # Returns
 /// * `Result<(), Box<dyn std::error::Error>>` - Returns an `Ok` result if the operation completes successfully, otherwise returns an error.
 
-async fn decrypt_and_download_file(pool: &MySqlPool, _file_id: i32) -> Result<(), Box<dyn Error>> {
+pub async fn decrypt_and_download_file(pool: &MySqlPool, _file_id: i32) -> Result<(), Box<dyn Error>> {
     // Query to get file information
     let row = sqlx::query("SELECT file_id, file_path, encrypted_key FROM Files WHERE file_id = ?")
         .bind(_file_id)

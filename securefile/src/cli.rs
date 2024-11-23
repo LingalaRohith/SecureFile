@@ -11,3 +11,5 @@ pub fn upload_cli() {
     let user = User::authenticate(&username, &password).unwrap();
     File::upload(&file_name, &file_path, priority.parse().unwrap(), user.user_id).unwrap();
 }
+
+

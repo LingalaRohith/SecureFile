@@ -94,7 +94,7 @@ RUN curl -fsSL https://www.openssl.org/source/openssl-3.0.7.tar.gz -o openssl-3.
 RUN cargo install sqlx-cli
 
 # Step 6: Set a placeholder DATABASE_URL environment variable for sqlx preparation
-ENV DATABASE_URL=mysql://root:123%40Rohith@db:3306/Files  
+ENV DATABASE_URL=mysql://root:123%40Rohith@127.0.0.1:3306/Files  
 # mysql://root:123@Rohith@localhost/Files
 
 # Step 7: Copy Cargo files to leverage Docker caching during dependency installation

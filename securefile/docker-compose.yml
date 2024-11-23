@@ -27,36 +27,81 @@
 #   db_data:
 
 
-version: '3.8'
+# version: '3.8'
+
+# services:
+#   db:
+#     image: mysql:8.0
+#     environment:
+#       MYSQL_ROOT_PASSWORD: "123@Rohith"
+#       MYSQL_DATABASE: "Files"
+#     ports:
+#       - "3306:3306"  # Expose MySQL on the default port
+#     volumes:
+#       - db_data:/var/lib/mysql  # Persist database data
+#     healthcheck:
+#       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+#       interval: 10s
+#       retries: 5
+#       start_period: 30s  # Allow MySQL some time to initialize before reporting healthy
+
+#   app:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     environment:
+#       DATABASE_URL: mysql://root:123%40Rohith@securefile-db-1:3306/Files
+#     depends_on:
+#       db:
+#         condition: service_healthy  # Ensure the app only starts after the DB is healthy
+#     ports:
+#       - "8080:8080"  # Expose the app's port if needed
+
+# volumes:
+#   db_data:
+
+version: '3.9'
 
 services:
   db:
     image: mysql:8.0
+    container_name: securefile-db-1
     environment:
       MYSQL_ROOT_PASSWORD: "123@Rohith"
       MYSQL_DATABASE: "Files"
     ports:
-      - "3306:3306"  # Expose MySQL on the default port
+      - "3306:3306"
     volumes:
-      - db_data:/var/lib/mysql  # Persist database data
+      - db_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       retries: 5
-      start_period: 30s  # Allow MySQL some time to initialize before reporting healthy
+      start_period: 30s
+      timeout: 5s
+    networks:
+      - securefile-network
 
   app:
     build:
       context: .
       dockerfile: Dockerfile
+    command: ["./wait-for-it.sh", "securefile-db-1:3306", "--", "your-start-command"]
+    container_name: securefile-app
     environment:
-      DATABASE_URL: mysql://root:123%40Rohith@db:3306/Files
+      DATABASE_URL: mysql://root:123%40Rohith@securefile-db-1:3306/Files  #mysql://root:123%40Rohith@db:3306/Files
     depends_on:
       db:
-        condition: service_healthy  # Ensure the app only starts after the DB is healthy
+        condition: service_healthy
     ports:
-      - "8080:8080"  # Expose the app's port if needed
+      - "8080:8080"
+    networks:
+      - securefile-network
 
 volumes:
   db_data:
+
+networks:
+  securefile-network:
+    driver: bridge
 

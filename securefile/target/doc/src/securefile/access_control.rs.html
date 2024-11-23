@@ -86,6 +86,62 @@
 <a href="#86" id="86">86</a>
 <a href="#87" id="87">87</a>
 <a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
 </pre></div><pre class="rust"><code><span class="comment">// Manages user access based on roles, file priority, and master key.
 </span><span class="kw">use </span>sqlx::{query, MySqlPool};
 <span class="kw">use </span>std::io::{<span class="self">self</span>, Write};
@@ -99,7 +155,21 @@
     Director,
 }
 
-<span class="kw">impl </span>FromStr <span class="kw">for </span>UserRole {
+<span class="doccomment">/// Converts a string input into a valid `UserRole` enum.
+///
+/// The `FromStr` trait implementation enables parsing a string into one of the four `UserRole`
+/// variants: Admin, Developer, Manager, or Director. The string comparison is case-insensitive.
+///
+/// # Arguments
+///
+/// * `s` - The string to parse into a `UserRole` variant.
+///
+/// # Returns
+///
+/// Returns a `Result` containing either a valid `UserRole` or an error message if the string cannot
+/// be parsed into a known role.
+
+</span><span class="kw">impl </span>FromStr <span class="kw">for </span>UserRole {
     <span class="kw">type </span><span class="prelude-val">Err </span>= String;
 
     <span class="kw">fn </span>from_str(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Err&gt; {
@@ -113,7 +183,39 @@
     }
 }
 
-<span class="kw">pub async fn </span>manage_access(pool: <span class="kw-2">&amp;</span>MySqlPool) -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
+<span class="doccomment">/// Manages user access control based on roles, file priority, and time restrictions.
+///
+/// This function interacts with the MySQL database to insert a record into the `UserAccessControl`
+/// table, which determines whether a user has access to a specific file. The decision is based on
+/// the required role, whether access is granted, and if there are any time restrictions in place.
+///
+/// The access control mechanism relies on the following parameters:
+/// 1. `file_id`: The ID of the file to which access is being controlled.
+/// 2. `access_granted`: A boolean value indicating whether the user has access to the file.
+/// 3. `role_required`: The role required to access the file. The possible roles are Admin, Developer, Manager, and Director.
+/// 4. `time_restricted`: A boolean value indicating whether access to the file is restricted by time (e.g., office hours only).
+///
+/// # Arguments
+///
+/// * `pool` - A reference to the MySQL connection pool (`MySqlPool`) used to interact with the database.
+///
+/// # Returns
+///
+/// Returns `Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt;`, indicating whether the user access control
+/// record was successfully inserted into the database or an error occurred.
+///
+/// # Example
+/// ```rust
+/// let pool: MySqlPool = // your pool initialization here
+/// manage_access(&amp;pool).await.unwrap();
+/// ```
+///
+/// # How it works:
+/// 1. The user is prompted to input a file ID, access permission (yes/no), required role, and time restriction status.
+/// 2. The provided input is validated, and the access control information is inserted into the `UserAccessControl` table.
+/// 3. If the operation succeeds, a confirmation message is shown; otherwise, an error message is returned.
+
+</span><span class="kw">pub async fn </span>manage_access(pool: <span class="kw-2">&amp;</span>MySqlPool) -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
     <span class="macro">println!</span>(<span class="string">"Managing access control..."</span>);
 
     <span class="kw">let </span>file_id: u32 = get_input(<span class="string">"Enter file ID: "</span>)
@@ -164,7 +266,17 @@
     input.trim().to_string()
 }
 
-<span class="kw">impl </span>ToString <span class="kw">for </span>UserRole {
+
+<span class="doccomment">/// Converts a `UserRole` into a string for database storage.
+///
+/// The `ToString` trait implementation provides a string representation for each `UserRole` variant
+/// to facilitate insertion into the database or other string-based operations.
+///
+/// # Returns
+///
+/// Returns the string representation of the `UserRole` variant (e.g., "admin", "developer", etc.).
+
+</span><span class="kw">impl </span>ToString <span class="kw">for </span>UserRole {
     <span class="kw">fn </span>to_string(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
         <span class="kw">match </span><span class="self">self </span>{
             UserRole::Admin =&gt; <span class="string">"admin"</span>.to_string(),

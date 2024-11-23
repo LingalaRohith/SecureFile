@@ -446,6 +446,7 @@
 <a href="#446" id="446">446</a>
 <a href="#447" id="447">447</a>
 <a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>aes_gcm::{Aes256Gcm, Key, Nonce}; <span class="comment">// AES-GCM encryption
 </span><span class="kw">use </span>aes_gcm::aead::{KeyInit, AeadInPlace}; <span class="comment">// Aead trait and AeadInPlace
 </span><span class="kw">use </span>rand::Rng; <span class="comment">// For generating random keys
@@ -599,13 +600,14 @@
 ///
 /// # Example:
 /// ```rust
-/// let file_name = "example.txt";
-/// let file_path = "/path/to/example.txt";
-/// let key_input = "32-byte-key-here-please-ensure-it-is-exactly-32-bytes"; // Replace with a real key
-///
-/// let encrypted_file = encrypt_and_save_file(file_name, file_path, key_input).await.unwrap();
-/// println!("Encrypted file saved at: {}", encrypted_file);
-/// ```
+</span><span class="comment">// / let file_name = "example.txt";
+// / let file_path = "/path/to/example.txt";
+// / let key_input = "32-byte-key-here-please-ensure-it-is-exactly-32-bytes"; // Replace with a real key
+// /
+// / let encrypted_file = encrypt_and_save_file(file_name, file_path, key_input).await.unwrap();
+// / println!("Encrypted file saved at: {}", encrypted_file);
+</span><span class="doccomment">/// ```
+/// 
 </span><span class="kw">pub async fn </span>encrypt_and_save_file(file_name: <span class="kw-2">&amp;</span>str, file_path: <span class="kw-2">&amp;</span>str, key_input: String) -&gt; <span class="prelude-ty">Result</span>&lt;String, Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
     <span class="comment">// Step 1: Read the file content
     </span><span class="kw">let </span><span class="kw-2">mut </span>file = File::open(file_path).map_err(|e| {
@@ -685,7 +687,7 @@
 /// # Returns
 ///
 /// Returns `Result&lt;String, Box&lt;dyn std::error::Error&gt;&gt;` with the encrypted file path or an error.
-</span><span class="kw">async fn </span>encrypt_file() {
+</span><span class="kw">pub async fn </span>encrypt_file() {
     <span class="kw">let </span>file_name = get_input(<span class="string">"Enter the file name to encrypt: "</span>);
     <span class="kw">let </span>file_path = get_input(<span class="string">"Enter the full path of the file: "</span>);
     <span class="kw">let </span>key_input = get_input(<span class="string">"Enter a 32-character encryption key: "</span>);

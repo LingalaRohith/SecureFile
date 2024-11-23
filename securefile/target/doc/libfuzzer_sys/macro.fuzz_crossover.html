@@ -1,0 +1,94 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Define a custom cross-over function to combine test cases."><title>fuzz_crossover in libfuzzer_sys - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-492a78a4a87dcc01.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="libfuzzer_sys" data-themes="" data-resource-suffix="" data-rustdoc-version="1.82.0 (f6e511eec 2024-10-15)" data-channel="1.82.0" data-search-js="search-a99f1315e7cc5121.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../static.files/storage-118b08c4c78b968e.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-921df33f47b8780c.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-3b12f09e550e0385.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../libfuzzer_sys/index.html">libfuzzer_<wbr>sys</a><span class="version">0.4.8</span></h2></div><div class="sidebar-elems"></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Macro <a href="index.html">libfuzzer_sys</a>::<wbr><a class="macro" href="#">fuzz_crossover</a><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><span class="out-of-band"><a class="src" href="../src/libfuzzer_sys/lib.rs.html#634-680">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><span class="macro">macro_rules!</span> fuzz_crossover {
+    (
+        |
+        <span class="macro-nonterminal">$data1</span>:ident : <span class="kw-2">&amp;</span>[u8] ,
+        <span class="macro-nonterminal">$data2</span>:ident : <span class="kw-2">&amp;</span>[u8] ,
+        <span class="macro-nonterminal">$out</span>:ident : <span class="kw-2">&amp;mut </span>[u8] ,
+        <span class="macro-nonterminal">$seed</span>:ident : u32 $(,)*
+        |
+        <span class="macro-nonterminal">$body</span>:block
+    ) =&gt; { ... };
+}</pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Define a custom cross-over function to combine test cases.</p>
+<p>This is optional, and libFuzzer will use its own, default cross-over strategy
+if this is not provided. (As of the time of writing, this default strategy
+takes alternating byte sequences from the two test cases, to construct the
+new one) (see <code>FuzzerCrossOver.cpp</code>)</p>
+<p>This could potentially be useful if your input is, for instance, a
+sequence of fixed sized, multi-byte values and the crossover could then
+merge discrete values rather than joining parts of a value.</p>
+<h3 id="implementation-contract"><a class="doc-anchor" href="#implementation-contract">§</a>Implementation Contract</h3>
+<p>The original, read-only inputs are given in the full slices of <code>data1</code>, and
+<code>data2</code> (as opposed to the, potentially, partial slice of <code>data</code> in
+<a href="macro.fuzz_mutator.html" title="macro libfuzzer_sys::fuzz_mutator">the <code>fuzz_mutator!</code> macro</a>).</p>
+<p>You must place the new input merged from the two existing inputs’ data
+into <code>out</code> and return the size of the relevant data written to that slice.</p>
+<p>The deterministic requirements from <a href="macro.fuzz_mutator.html" title="macro libfuzzer_sys::fuzz_mutator">the <code>fuzz_mutator!</code> macro</a>
+apply as well to the <code>seed</code> parameter</p>
+<h3 id="example-floating-point-sum-nan"><a class="doc-anchor" href="#example-floating-point-sum-nan">§</a>Example: Floating-Point Sum NaN</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#![no_main]
+
+</span><span class="kw">use </span>libfuzzer_sys::{fuzz_crossover, fuzz_mutator, fuzz_target, fuzzer_mutate};
+<span class="kw">use </span>rand::{rngs::StdRng, Rng, SeedableRng};
+<span class="kw">use </span>std::mem::size_of;
+
+<span class="macro">fuzz_target!</span>(|data: <span class="kw-2">&amp;</span>[u8]| {
+    <span class="kw">let </span>(<span class="kw">_</span>, floats, <span class="kw">_</span>) = <span class="kw">unsafe </span>{ data.align_to::&lt;f64&gt;() };
+
+    <span class="kw">let </span>res = floats
+        .iter()
+        .fold(<span class="number">0.0</span>, |a, b| <span class="kw">if </span>b.is_nan() { a } <span class="kw">else </span>{ a + b });
+
+    <span class="macro">assert!</span>(
+        !res.is_nan(),
+        <span class="string">"The sum of the following floats resulted in a NaN: {floats:?}"
+    </span>);
+});
+
+<span class="comment">// Inject some ...potentially problematic values to make the example close
+// more quickly.
+</span><span class="macro">fuzz_mutator!</span>(|data: <span class="kw-2">&amp;mut </span>[u8], size: usize, max_size: usize, seed: u32| {
+    <span class="kw">let </span><span class="kw-2">mut </span>gen = StdRng::seed_from_u64(seed.into());
+
+    <span class="kw">let </span>(<span class="kw">_</span>, floats, <span class="kw">_</span>) = <span class="kw">unsafe </span>{ data[..size].align_to_mut::&lt;f64&gt;() };
+
+    <span class="kw">let </span>x = gen.gen_range(<span class="number">0</span>..=<span class="number">1000</span>);
+    <span class="kw">if </span>x == <span class="number">0 </span>&amp;&amp; !floats.is_empty() {
+        floats[<span class="number">0</span>] = f64::INFINITY;
+    } <span class="kw">else if </span>x == <span class="number">1000 </span>&amp;&amp; floats.len() &gt; <span class="number">1 </span>{
+        floats[<span class="number">1</span>] = f64::NEG_INFINITY;
+    } <span class="kw">else </span>{
+        <span class="kw">return </span>fuzzer_mutate(data, size, max_size);
+    }
+
+    size
+});
+
+<span class="macro">fuzz_crossover!</span>(|data1: <span class="kw-2">&amp;</span>[u8], data2: <span class="kw-2">&amp;</span>[u8], out: <span class="kw-2">&amp;mut </span>[u8], _seed: u32| {
+    <span class="comment">// Decode each source to see how many floats we can pull with proper
+    // alignment, and destination as to how many will fit with proper alignment
+    //
+    // Keep track of the unaligned prefix to `out`, as we will need to remember
+    // that those bytes will remain prepended to the actual floats that we
+    // write into the out buffer.
+    </span><span class="kw">let </span>(out_pref, out_floats, <span class="kw">_</span>) = <span class="kw">unsafe </span>{ out.align_to_mut::&lt;f64&gt;() };
+    <span class="kw">let </span>(<span class="kw">_</span>, d1_floats, <span class="kw">_</span>) = <span class="kw">unsafe </span>{ data1.align_to::&lt;f64&gt;() };
+    <span class="kw">let </span>(<span class="kw">_</span>, d2_floats, <span class="kw">_</span>) = <span class="kw">unsafe </span>{ data2.align_to::&lt;f64&gt;() };
+
+    <span class="comment">// Put into the destination, floats first from data1 then from data2, ...if
+    // possible given the size of `out`
+    </span><span class="kw">let </span><span class="kw-2">mut </span>i: usize = <span class="number">0</span>;
+    <span class="kw">for </span>float <span class="kw">in </span>d1_floats.iter().chain(d2_floats).take(out_floats.len()) {
+        out_floats[i] = <span class="kw-2">*</span>float;
+        i += <span class="number">1</span>;
+    }
+
+    <span class="comment">// Now that we have written the true floats, report back to the fuzzing
+    // engine that we left the unaligned `out` prefix bytes at the beginning of
+    // `out` and also then the floats that we wrote into the aligned float
+    // section.
+    </span>out_pref.len() * size_of::&lt;u8&gt;() + i * size_of::&lt;f64&gt;()
+});</code></pre></div>
+<p>This example is a minimized version of <a href="https://rigtorp.se/fuzzing-floating-point-code/">Erik Rigtorp’s floating point
+summation fuzzing example</a>. A more detailed version of this experiment
+can be found in the <code>example_crossover</code> directory.</p>
+</div></details></section></div></main></body></html>

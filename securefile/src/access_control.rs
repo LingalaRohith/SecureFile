@@ -1,5 +1,5 @@
 // Manages user access based on roles, file priority, and master key.
-use sqlx::{query, MySqlPool};
+use sqlx::{MySqlPool};
 use std::io::{self, Write};
 use std::str::FromStr;
 
