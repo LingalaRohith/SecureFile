@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["admin_file_management","check_if_file_locked","decrypt_and_edit_file","decrypt_file","encrypt_and_save_file","encrypt_file","get_input","insert_file_metadata","lock_file_in_db","reencrypt_and_save_file","unlock_file_in_db"],"struct":["FileLockManager"]};

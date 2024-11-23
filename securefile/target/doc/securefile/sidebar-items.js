@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["admin_menu","check_access","decrypt_and_download_file","developer_menu","director_menu","fetch_file_id","fetch_file_priority","get_input","main","manager_menu"],"mod":["access_control","file","user"]};
+window.SIDEBAR_ITEMS = {"fn":["get_input","main"]};

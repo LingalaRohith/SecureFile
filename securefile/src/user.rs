@@ -5,13 +5,23 @@ use sqlx::{mysql::MySqlPool, Row};
 use std::io::{self, Write};
 use std::fmt;
 
+
+/// Represents the role of a user in the system.
 #[derive(Debug, PartialEq)]
 #[derive(Clone)]
 pub enum UserRole {
+    /// Role with administrative privileges.
     Admin,
+    /// Role for software developers.
     Developer,
+    /// Role for managers with specific access rights.
     Manager,
+    /// Role for directors with high-level access.
     Director,
+    // Admin,
+    // Developer,
+    // Manager,
+    // Director,
 }
 
 impl fmt::Display for UserRole {
@@ -27,6 +37,26 @@ impl fmt::Display for UserRole {
 }
 
 
+/// Authenticates a user by verifying their email and password.
+///
+/// # Arguments
+///
+/// * `pool` - A reference to the MySQL database connection pool.
+/// * `email` - The email of the user attempting to log in.
+/// * `password` - The plain-text password provided by the user.
+///
+/// # Returns
+///
+/// * `Ok(UserRole)` - If authentication is successful, returns the user's role.
+/// * `Err(String)` - If authentication fails, returns an error message.
+///
+/// # Errors
+///
+/// This function returns an error if:
+/// - The user is not found.
+/// - The user is blocked.
+/// - The provided password is incorrect.
+/// - The database query fails.
 // Function to authenticate the user with email and password
 pub async fn authenticate_user(
     pool: &MySqlPool,
@@ -71,6 +101,20 @@ pub async fn authenticate_user(
    
 }
 
+
+/// Displays the user management menu, allowing administrators to add users.
+///
+/// # Arguments
+///
+/// * `pool` - A reference to the MySQL database connection pool.
+///
+/// # Returns
+///
+/// * `Ok(())` - If the operation completes successfully.
+/// * `Err(String)` - If an error occurs during user addition.
+///
+/// This function provides a loop to allow adding multiple users.
+
 // User management menu
 pub async fn user_management_menu(pool: &MySqlPool) -> Result<(), String> {
     loop {
@@ -83,6 +127,19 @@ pub async fn user_management_menu(pool: &MySqlPool) -> Result<(), String> {
     }
     Ok(())
 }
+
+/// Adds a new user to the database.
+///
+/// # Arguments
+///
+/// * `pool` - A reference to the MySQL database connection pool.
+///
+/// # Returns
+///
+/// * `Ok(())` - If the user is added successfully.
+/// * `Err(String)` - If an error occurs during user addition.
+///
+/// This function prompts the user for an email, password, and role, and stores the new user in the database.
 
 // Function to add a user to the database
 pub async fn add_user_to_db(pool: &MySqlPool) -> Result<(), String> {

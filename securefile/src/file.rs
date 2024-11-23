@@ -6,12 +6,9 @@ use std::io::{self, Read, Write};
 use sqlx::mysql::MySqlPool; 
 use std::error::Error;
 
-// use aes_gcm::{ aead::{Aead, generic_array::GenericArray}};
-// use aes_gcm::{aead::Aead};
 use anyhow::{Result};
 use std::fs::{File, OpenOptions};
 
-// use aes::{Aes256, NewBlockCipher};
 use base64::{decode};
 use hex;
 use std::sync::Arc;
@@ -155,12 +152,12 @@ pub async fn check_if_file_locked(pool: &MySqlPool, file_id: i32) -> Result<bool
 ///
 /// # Example:
 /// ```rust
-// / let file_name = "example.txt";
-// / let file_path = "/path/to/example.txt";
-// / let key_input = "32-byte-key-here-please-ensure-it-is-exactly-32-bytes"; // Replace with a real key
-// /
-// / let encrypted_file = encrypt_and_save_file(file_name, file_path, key_input).await.unwrap();
-// / println!("Encrypted file saved at: {}", encrypted_file);
+/// let file_name = "example.txt";
+/// let file_path = "/path/to/example.txt";
+/// let key_input = "32-byte-key-here-please-ensure-it-is-exactly-32-bytes"; // Replace with a real key
+///
+/// let encrypted_file = encrypt_and_save_file(file_name, file_path, key_input).await.unwrap();
+/// println!("Encrypted file saved at: {}", encrypted_file);
 /// ```
 /// 
 pub async fn encrypt_and_save_file(file_name: &str, file_path: &str, key_input: String) -> Result<String, Box<dyn std::error::Error>> {
@@ -294,7 +291,7 @@ async fn insert_file_metadata(pool: &MySqlPool) -> Result<(), Box<dyn Error>> {
 ///
 /// Returns `Result<String, Box<dyn std::error::Error>>`, containing the path of the decrypted file or an error.
 
-pub async fn decrypt_file(encrypted_file_path: &str, encrypted_key_base64: &[u8]) -> Result<String, Box<dyn std::error::Error>> {
+pub async fn decrypt_file(encrypted_file_path: &str, encrypted_key_base64: &[u8],_key_input: Option<&str>) -> Result<String, Box<dyn std::error::Error>> {
     // Step 1: Open the encrypted file
     let mut file = File::open(encrypted_file_path).map_err(|e| {
         eprintln!("Failed to open encrypted file: {}. Please make sure the path is correct.", e);
@@ -386,7 +383,7 @@ pub async fn decrypt_and_edit_file(pool: &MySqlPool, file_id: i32, _file_lock_ma
     let encrypted_key = row.1; // This is already in a byte format
 
     // Decrypt the file with the provided encryption key
-    let decrypted_content = decrypt_file(&file_path, &encrypted_key).await?;
+    let decrypted_content = decrypt_file(&file_path, &encrypted_key, Some("p1QmZaT5Lk9XBNr2CjY4MWKx8Lt7FVcR")).await?;
     println!("Decrypted content: \n{}", decrypted_content);
 
     // Add new content to the decrypted file

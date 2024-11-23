@@ -1894,6 +1894,7 @@ dependencies = [
  "rand",
  "rpassword",
  "sqlx",
+ "tempfile",
  "tokio",
 ]
 

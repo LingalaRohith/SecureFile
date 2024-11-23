@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["admin_menu","decrypt_and_download_file","developer_menu","director_menu","manager_menu"]};
