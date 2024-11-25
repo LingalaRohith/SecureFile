@@ -2,6 +2,24 @@
 ## Project Overview
 This project is a secure file management system built using Rust and MySQL. It provides functionalities for user registration, authentication, role-based access control, file encryption and decryption, priority management, and comprehensive logging. The system ensures that sensitive files are securely stored and accessed only by authorized users, with robust mechanisms to maintain security and integrity.
 
+
+### Execution Steps.
+
+- **Docker Execution**:
+    Open terminal and follow the below steps:
+      1. docker build -t test . 
+      2. docker run -d --name test -p 3306:3306 test
+      3. docker ps copy container id from the output.
+      4. docker exec -it <Container_ID> mysql -u root -p
+      5. When prompted enter password as `root`
+
+- **SecureFile Execution**:
+      1. Open another terminal and do cargo run.
+      2. When prompted enter email as rhthlingala11@gmail.com and password as 123@Rohith
+      3. Perform the operations that you would like to do.
+
+
+
 ### Key Features:
 
 - **User Management**:
