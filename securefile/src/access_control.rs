@@ -74,6 +74,10 @@ impl FromStr for UserRole {
 pub async fn manage_access(pool: &MySqlPool) -> Result<(), Box<dyn std::error::Error>> {
     println!("Managing access control...");
 
+    let user_id: u32 = get_input("Enter user ID: ")
+        .parse()
+        .map_err(|_| "Invalid user ID")?;
+
     let file_id: u32 = get_input("Enter file ID: ")
         .parse()
         .map_err(|_| "Invalid file ID")?;
@@ -91,7 +95,8 @@ pub async fn manage_access(pool: &MySqlPool) -> Result<(), Box<dyn std::error::E
     let time_restricted = get_input("Time restricted? (yes/no): ").to_lowercase() == "yes";
 
     // Execute the SQL query to insert access control record
-    let result = sqlx::query("INSERT INTO UserAccessControl (file_id, access_granted, role_required, time_restricted) VALUES (?, ?, ?, ?)")
+    let result = sqlx::query("INSERT INTO UserAccessControl (user_id, file_id, access_granted, role_required, time_restricted) VALUES (?, ?, ?, ?, ?)")
+        .bind(user_id)
         .bind(file_id)
         .bind(access_granted)
         .bind(role_required.to_string())

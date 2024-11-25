@@ -11,7 +11,8 @@ use std::sync::Arc;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Database connection setup
-    let database_url = "mysql://root:123%40Rohith@localhost:3306/Files"; //your password and database name i forgot mysql123
+    // let database_url = "mysql://root:123%40Rohith@localhost:3306/Files"; //your password and database name i forgot mysql123
+   let database_url = "mysql://root:root@0.0.0.0:3306/Files";
     let pool = MySqlPool::connect(database_url).await?;
 
     // Login logic
