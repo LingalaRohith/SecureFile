@@ -30,7 +30,7 @@ fuzz_target!(|data: &[u8]| {
 
                     // Attempt decryption
                     tokio::runtime::Runtime::new().unwrap().block_on(async {
-                        match decrypt_file(file_path.to_str().unwrap(), key_bytes).await {
+                        match decrypt_file(file_path.to_str().unwrap(), key_bytes, Some("p1QmZaT5Lk9XBNr2CjY4MWKx8Lt7FVcR")).await {
                             Ok(decrypted_path) => {
                                 println!(
                                     "Decryption successful! Decrypted file saved at: {}",
