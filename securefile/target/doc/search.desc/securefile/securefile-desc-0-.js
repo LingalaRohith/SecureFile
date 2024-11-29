@@ -1,1 +1,0 @@
-searchState.loadedDescShard("securefile", 0, "Entry point of the application. Manages user login and …")

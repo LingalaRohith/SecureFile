@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["Corpus"],"fn":["fuzzer_mutate"],"macro":["fuzz_crossover","fuzz_mutator","fuzz_target"]};
